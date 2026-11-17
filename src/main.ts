@@ -3,6 +3,7 @@ import { IslandWorld } from './world';
 import { Input } from './input';
 import { IslandMap } from './map';
 import { IslandAudio } from './audio';
+import { QualityMonitor } from './quality';
 import { CRYSTALS, RUINS, SPAWN, SAVE_KEY, createState, loadState, safeWrite, collectCrystal, activateRuin, ruinCount, completed, type RuinId, type Quality } from './state';
 import { terrainHeight } from './terrain';
 
@@ -11,6 +12,7 @@ let state=loadState();
 let world:IslandWorld;
 let input:Input;
 let mode:'landing'|'playing'|'paused'|'reset'|'complete'|'error'='landing';
+const qualityMonitor=new QualityMonitor();
 const audio=new IslandAudio();audio.setEnabled(state.sound);
 const mobile=matchMedia('(pointer:coarse)').matches||navigator.maxTouchPoints>0;
 let nearby:RuinId|null=null;
@@ -82,7 +84,7 @@ $('confirm-reset').addEventListener('click',()=>{
   const {sound,quality}=state;state=createState();state.sound=sound;state.quality=quality;completionAcknowledged=false;
   world.resetPosition(SPAWN);world.snapCamera();updateProgress();setPlay();toast('新的旅程，从一阵海风开始。');
 });
-$('quality').addEventListener('change',()=>{state.quality=$<HTMLSelectElement>('quality').value as Quality;world.setQuality(state.quality);persist();});
+$('quality').addEventListener('change',()=>{state.quality=$<HTMLSelectElement>('quality').value as Quality;qualityMonitor.reset();world.setQuality(state.quality);persist();});
 $('pause-modal').addEventListener('click',e=>{if(e.target===$('pause-modal'))setPlay();});
 // Keep keyboard focus within the visible dialog.
 window.addEventListener('keydown',e=>{
@@ -108,13 +110,13 @@ async function init():Promise<void>{
     const map=new IslandMap($<HTMLCanvasElement>('minimap'));
     updateProgress();
     if(hasJourney()){$('start').innerHTML='继续旅程 <span aria-hidden="true">↗</span>';$('save-note').textContent=`旅程已保存 · 已找到 ${state.collected.length} / 12 枚水晶`;}
-    let previous=performance.now(),elapsed=0,slowFrames=0,adapted=false;
+    let previous=performance.now(),elapsed=0;
     let lastNear='';
     const frame=(now:number)=>{
       if(mode==='error')return;
       const wallDelta=(now-previous)/1000;
       const dt=Math.min(wallDelta,.1);previous=now;elapsed+=dt;
-      if(state.quality==='auto'&&!adapted){slowFrames=wallDelta>.085?slowFrames+1:Math.max(0,slowFrames-1);if(slowFrames>=8){world.setQuality('low');adapted=true;}}
+      if(state.quality==='auto'&&qualityMonitor.shouldLower(wallDelta))world.setQuality('low');
       const playing=mode==='playing';
       if(playing||mode==='landing')world.step(dt,elapsed,playing,input.sample(),mode==='landing');
       if(playing){

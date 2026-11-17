@@ -35,3 +35,6 @@ export function moveOnIsland(from: Position, to: Position, obstacles: Obstacle[]
   if (free(z)) return z;
   return [...from];
 }
+export function recoverPosition(p:Position,fallback:Position,obstacles:Obstacle[]):Position {
+  return isSafe(...p)&&!obstacles.some(o=>Math.hypot(p[0]-o.x,p[1]-o.z)<o.radius+.55)?[...p]:[...fallback];
+}

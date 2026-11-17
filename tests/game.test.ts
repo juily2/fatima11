@@ -70,3 +70,12 @@ describe('navigable world', () => {
     expect(moveOnIsland([20, 100], [22, 102], [{x:22,z:102,radius:1}])).not.toEqual([22, 102]);
   });
 });
+
+// A saved location in solid scenery must never strand a returning player.
+describe('safe position recovery', () => {
+  it('returns to the beach if a saved land position lies inside a pillar', async () => {
+    const { recoverPosition } = await import('../src/terrain');
+    expect(recoverPosition([-82,78],[18,130],[{x:-82,z:78,radius:.95}])).toEqual([18,130]);
+    expect(recoverPosition([20,100],[18,130],[])).toEqual([20,100]);
+  });
+});

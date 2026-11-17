@@ -8,6 +8,7 @@ test('desktop starts, moves, pauses and restores a real save', async ({page}) =>
   await page.screenshot({path:'test-results/landing.png'});
   await page.getByRole('button',{name:'启程探索'}).click();
   await expect(page.locator('#objective')).toBeVisible();
+  await page.getByRole('button',{name:'关闭声音',exact:true}).click();
   await page.keyboard.down('w');
   await expect.poll(async()=> (await page.evaluate(()=>JSON.parse(localStorage.getItem('wind-island-v1')!).position))[1],{timeout:20000}).toBeLessThan(124);
   await page.keyboard.up('w');

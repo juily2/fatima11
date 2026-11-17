@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 import { CRYSTALS, RUINS, SPAWN, type GameState, type Quality } from './state';
-import { GRID, WORLD_SIZE, rawHeight, terrainHeight, isSafe, moveOnIsland, type Obstacle, type Position } from './terrain';
+import { GRID, WORLD_SIZE, rawHeight, terrainHeight, isSafe, moveOnIsland, recoverPosition, type Obstacle, type Position } from './terrain';
 
 export interface Motion { forward:number; right:number; sprint:boolean; jump:boolean }
 const Y = new THREE.Vector3(0,1,0);
@@ -237,7 +237,7 @@ export class IslandWorld {
   look(dx:number,dy:number):void {this.yaw-=dx*.005;this.pitch=THREE.MathUtils.clamp(this.pitch+dy*.004,.05,.92);}
   zoom(delta:number):void {this.distance=THREE.MathUtils.clamp(this.distance+delta*.01,7,24);}
   resetPosition(p:Position):void {
-    const pos=isSafe(...p)?p:SPAWN;this.player.position.set(pos[0],terrainHeight(...pos),pos[1]);this.lastSafe=[...pos];this.jumpVelocity=0;this.ground=true;
+    const pos=recoverPosition(p,SPAWN,this.obstacles);this.player.position.set(pos[0],terrainHeight(...pos),pos[1]);this.lastSafe=[...pos];this.jumpVelocity=0;this.ground=true;
   }
   snapCamera():void {
     const p=this.player.position;

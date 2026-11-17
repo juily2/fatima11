@@ -8,10 +8,11 @@ export class Input {
   private lastX=0;private lastY=0;
   enabled=false;
   constructor(canvas:HTMLCanvasElement,onLook:(x:number,y:number)=>void,onInteract:()=>void,onPause:()=>void,onZoom:(delta:number)=>void){
-    const editable=()=>['INPUT','SELECT','TEXTAREA','BUTTON'].includes(document.activeElement?.tagName??'');
+    const editable=()=>['INPUT','SELECT','TEXTAREA'].includes(document.activeElement?.tagName??'');
     window.addEventListener('keydown',e=>{
       if(e.code==='Escape'){e.preventDefault();if(!e.repeat)onPause();return;}
       if(!this.enabled||editable())return;
+      if(e.code==='Space'&&document.activeElement instanceof HTMLButtonElement)return;
       if(['KeyW','KeyA','KeyS','KeyD','ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Space','ShiftLeft','ShiftRight','KeyE'].includes(e.code))e.preventDefault();
       this.keys.add(e.code);if(e.code==='Space'&&!e.repeat)this.jumpRequested=true;if(e.code==='KeyE'&&!e.repeat)onInteract();
     });
