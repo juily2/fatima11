@@ -4,7 +4,9 @@
 
 [在线试玩（Sites 免费托管）](https://wind-island-juily2.luxesky.chatgpt.site/)
 
-GitHub Pages 部署文件已准备好；当前 GitHub 授权不允许新建仓库，等待创建公开空仓库 `juily2/wind-island` 后即可上传。
+[GitHub 源码（wind-island 独立分支）](https://github.com/juily2/fatima11/tree/wind-island)
+
+源码已上传到已有公开仓库的独立分支，原有 `main` 分支保持原样。游戏使用上方 Sites 免费网址。仓库中的 Pages 配置为未来独立的 `wind-island` 仓库准备，不会在当前分支自动部署。
 
 ## 玩法
 
