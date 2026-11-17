@@ -1,6 +1,25 @@
 {
-  "name": "wind-island", "version": "1.0.0", "private": true, "type": "module",
-  "scripts": {"dev": "vite --host 0.0.0.0", "build": "tsc --noEmit && vite build", "typecheck": "tsc --noEmit", "test": "vitest run", "preview": "vite preview --host 0.0.0.0", "test:browser": "playwright test"},
-  "dependencies": {"three": "^0.181.0"},
-  "devDependencies": {"@playwright/test": "^1.56.1", "@types/three": "^0.181.0", "typescript": "^5.9.3", "vite": "^7.2.2", "vitest": "^4.0.8"}
+  "name": "wind-island",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "tsc --noEmit && vite build",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "preview": "vite preview --host 0.0.0.0",
+    "test:browser": "playwright test"
+  },
+  "dependencies": {
+    "three": "^0.181.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.56.1",
+    "@types/node": "^26.6.6",
+    "@types/three": "^0.181.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.2",
+    "vitest": "^4.0.8"
+  }
 }

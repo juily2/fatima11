@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#153f3c" />
+  <meta name="description" content="风屿 Wind Island：一个关于海风、遗迹与微小发现的 3D 海岛探索小游戏。免费，打开浏览器即可启程。" />
+  <title>风屿 · Wind Island — 向风而行</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 80 80'%3E%3Crect width='80' height='80' rx='20' fill='%23153f3c'/%3E%3Cpath d='M40 12 62 40 40 68 18 40Z' fill='%23d9efad'/%3E%3Cpath d='m40 24 12 16-12 16' fill='none' stroke='%23153f3c' stroke-width='3'/%3E%3C/svg%3E" />
+</head>
+<body>
+  <canvas id="world" aria-label="风屿三维海岛世界"></canvas>
+  <div class="vignette" aria-hidden="true"></div>
+  <header id="header">
+    <a class="brand" href="./" aria-label="风屿首页"><span class="brand-symbol">✧</span><span>风屿<small>WIND ISLAND</small></span></a>
+    <div class="header-right"><span class="edition">一座小岛，一场漫游</span><button class="icon-button" id="sound" aria-label="关闭声音" title="声音"><span id="sound-icon">♫</span></button><button class="icon-button" id="pause" aria-label="暂停游戏" hidden>Ⅱ</button></div>
+  </header>
+
+  <main id="landing">
+    <div class="intro">
+      <div class="eyebrow"><span class="line"></span> 一场不必赶路的冒险</div>
+      <h1>向风而行<span>在小岛，<br>发现一点<span class="serif-accent">奇迹。</span></span></h1>
+      <p class="intro-copy">海浪留下线索，森林藏着回声。<br>收集散落的风之水晶，唤醒沉睡的古老遗迹。</p>
+      <button class="primary-button" id="start">启程探索 <span aria-hidden="true">↗</span></button>
+      <div class="start-note"><span class="status-dot"></span><span id="save-note">无需下载 · 单人探索 · 自动存档</span></div>
+      <div class="intro-features"><span><b>01</b> 自由漫游</span><span><b>12</b> 风之水晶</span><span><b>03</b> 古老遗迹</span></div>
+    </div>
+    <div class="island-label"><span class="coordinate">27° N &nbsp; / &nbsp; 119° E · 想象中的坐标</span><span class="island-caption">风起的地方<small>A LITTLE WORLD TO GET LOST IN</small></span><span class="label-cross">＋</span></div>
+    <div class="landing-footer"><span>慢一点，好风景就在路上。</span><span>戴上耳机，听见海风 <span aria-hidden="true">⌁</span></span></div>
+    <div id="loading" role="status">正在绘制你的海岛<span class="loading-dots">···</span></div>
+  </main>
+
+  <section id="hud" hidden aria-label="探索信息">
+    <div id="objective" class="objective-card">
+      <div class="eyebrow">THE JOURNEY <span id="journey-status">旅程进行中</span></div>
+      <h2>让风，再次吹过遗迹。</h2>
+      <div class="progress-summary"><span><span class="crystal-icon">◇</span> <b id="crystal-count">0</b><small> / 12 水晶</small></span><span class="ruin-summary"><b id="ruin-count">0</b><small> / 3 遗迹</small></span></div>
+      <div class="progress-track"><span id="progress-fill"></span></div>
+      <div id="ruin-list"></div>
+    </div>
+    <div id="region"><span class="region-mark">⌁</span><div><small>你正位于</small><span id="region-name">风起海滩</span></div></div>
+    <div id="minimap-box"><div class="map-title"><span>海岛手记</span><span class="map-north">N ↑</span></div><canvas id="minimap" width="340" height="340" aria-label="海岛地图，标有玩家、水晶与遗迹位置"></canvas><div class="map-legend"><span><i class="legend-player"></i>你</span><span>◇ 水晶</span><span>⊙ 遗迹</span></div></div>
+    <div id="controls-hint"><span><kbd>W A S D</kbd> 移动</span><span><kbd>拖动鼠标</kbd> 环顾</span><span><kbd>空格</kbd> 跳跃</span><span><kbd>Shift</kbd> 奔跑</span></div>
+    <div id="save-indicator"><span class="status-dot"></span> 已自动保存</div>
+  </section>
+  <button id="interact" class="interact-button" hidden></button>
+  <div id="nearby-hint" hidden></div>
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <div id="touch-controls" hidden>
+    <div id="joystick" aria-label="移动摇杆"><div id="joystick-knob"></div><span>移动</span></div>
+    <div id="look-zone" aria-label="拖动以转动视角"></div>
+    <div class="touch-actions"><button id="run" aria-label="奔跑" aria-pressed="false">↟<small>奔跑</small></button><button id="jump" aria-label="跳跃">↑<small>跳跃</small></button></div>
+    <span class="touch-look-hint">拖动右侧 · 环顾四周</span>
+  </div>
+
+  <div id="pause-modal" class="modal" hidden>
+    <section class="modal-card" role="dialog" aria-modal="true" aria-labelledby="pause-title">
+      <span class="modal-kicker">TAKE A BREATH</span><h2 id="pause-title">歇一会儿</h2><p>小岛一直都在，海风也会等你。</p>
+      <div class="settings-row"><label for="quality">画质</label><select id="quality"><option value="auto">自动适配</option><option value="low">轻盈 · 低画质</option><option value="high">细腻 · 高画质</option></select></div>
+      <div class="settings-row"><span>海风与音效</span><button id="modal-sound" class="text-button">已开启</button></div>
+      <div class="instructions">电脑：WASD / 方向键移动 · 鼠标拖动环顾<br>空格跳跃 · Shift 奔跑 · E 唤醒遗迹 · Esc 暂停<br><span>手机：左侧摇杆移动，右侧滑动环顾，轻点按钮跳跃。</span></div>
+      <button id="resume" class="primary-button">继续探索 <span>→</span></button><button id="reset" class="secondary-button">重新开始</button>
+      <small class="local-note">进度保存在当前浏览器，不跨设备同步。</small>
+    </section>
+  </div>
+  <div id="reset-modal" class="modal" hidden><section class="modal-card compact" role="dialog" aria-modal="true" aria-labelledby="reset-title"><span class="modal-kicker">A NEW BEGINNING</span><h2 id="reset-title">开启新的旅程？</h2><p>这会清除当前收集和遗迹进度。<br>已经走过的风景，还可以再看一次。</p><button id="confirm-reset" class="primary-button">确认重新开始 <span>↗</span></button><button id="cancel-reset" class="secondary-button">取消</button></section></div>
+  <div id="complete-modal" class="modal" hidden><section class="modal-card completion" role="dialog" aria-modal="true" aria-labelledby="complete-title"><div class="completion-art">✧</div><span class="modal-kicker">THE ISLAND REMEMBERS</span><h2 id="complete-title">风，记住了你的旅程。</h2><p>12 枚水晶，3 处遗迹，一段属于你的时光。<br>谢谢你，让这座小岛重新亮起。</p><div class="completion-stats"><span><b>12</b>风之水晶</span><span><b>3</b>已唤醒遗迹</span><span><b>∞</b>值得发现的风景</span></div><button id="continue" class="primary-button">留在岛上 <span>→</span></button><small class="local-note">没有终点，只有下一阵海风。</small></section></div>
+  <div id="error-modal" class="modal" hidden><section class="modal-card" role="alert"><span class="modal-kicker">WE'LL MEET AGAIN</span><h2>暂时无法打开这座岛</h2><p id="error-message">浏览器未能启用 3D 图形。请开启硬件加速，或使用最新版 Chrome、Edge、Safari 后重试。</p><button id="reload" class="primary-button">重新加载 <span>↻</span></button></section></div>
+  <script type="module" src="/src/main.ts"></script>
+</body>
+</html>
